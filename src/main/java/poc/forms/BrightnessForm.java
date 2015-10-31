@@ -9,7 +9,7 @@ import javax.swing.event.ChangeEvent;
 
 
 public class BrightnessForm extends BaseForm {
-  private JSpinner vSpiner;
+  private JLabel vSpiner;
 
   public BrightnessForm(ImageUpdater updater) {
     super(updater);
@@ -17,15 +17,15 @@ public class BrightnessForm extends BaseForm {
   }
 
   private void initComponents() {
-    vSpiner = new JSpinner();
+    vSpiner = new JLabel();
     JSlider brightnessSlider = new JSlider();
     JButton cancelButton = createCancelButton();
     JButton okButton = createOkButton();
 
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     setTitle("Brightness...");
-    setMinimumSize(new java.awt.Dimension(300, 100));
-    setPreferredSize(new java.awt.Dimension(380, 100));
+    setMinimumSize(new java.awt.Dimension(300, 200));
+    setPreferredSize(new java.awt.Dimension(380, 200));
 
     brightnessSlider.setMaximum(255);
     brightnessSlider.setMinimum(-255);
@@ -69,7 +69,7 @@ public class BrightnessForm extends BaseForm {
   // Reakcja na zmiane polozenia suwaka
   private void brightnessSliderStateChanged(ChangeEvent evt) {
     JSlider slider = (JSlider) evt.getSource();
-    vSpiner.setValue(slider.getValue());
+    vSpiner.setText(" "+slider.getValue());
     try {
       // Dla kazdego nowego polozenia suwaka obraz roboczy jest przeliczany od nowa
       ImageProcessor.processImage(updater.getOriginalImage(), updater.getWorkImage(), new BrightnessFunction(slider.getValue()));

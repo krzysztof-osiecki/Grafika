@@ -23,7 +23,7 @@ public class HistogramProcessor {
   public double getAverangeIntensity() {
     double pixelCount = getPixelCount();
     double averangeIntensity = 0;
-    for (int i = 1; i < 256; i++) {
+    for (int i = 0; i < 256; i++) {
       averangeIntensity += i * (HistogramData.GRAY_SCALE[i] / pixelCount);
     }
     return averangeIntensity;

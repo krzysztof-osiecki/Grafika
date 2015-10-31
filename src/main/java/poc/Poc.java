@@ -2,13 +2,10 @@ package poc;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import poc.forms.BrightnessForm;
-import poc.forms.ContrastForm;
-import poc.forms.GammaForm;
-import poc.forms.LogForm;
+import poc.forms.*;
 import poc.functions.IdentityFunction;
-import poc.tools.Channel;
 import poc.histogram.HistogramProcessor;
+import poc.tools.Channel;
 import poc.tools.ImageProcessor;
 import poc.tools.ImageUpdater;
 
@@ -29,19 +26,22 @@ public class Poc extends JFrame implements ImageUpdater {
   private BrightnessForm brightnessForm;
   private ContrastForm contrastForm;
   private GammaForm gammaForm;
+  private HslForm hslForm;
+  private CmykForm cmykForm;
 
   // Klasa obslugujaca histogram
   private HistogramProcessor histogramProcessor;
+  private Channel selectedChannel = Channel.ALL;
 
   // Komponenty do wyświetlania obrazu na formatce glownej
   private JLabel imageLabel;
   private ImageIcon imageIcon;
   private LogForm logForm;
   private ChartPanel histogram;
-  private Channel selectedChannel = Channel.ALL;
   private JLabel varianceLabel;
   private JLabel intensityLabel;
   private JComboBox<Channel> comboBox;
+  private JScrollPane jScrollPane;
 
   public static void main(String[] args) {
     new Poc();
@@ -130,6 +130,65 @@ public class Poc extends JFrame implements ImageUpdater {
   }
 
   private void initComponents() {
+    createMenu();
+    createMainWindow();
+    createLayouts();
+  }
+
+  private void createLayouts() {
+    GroupLayout layout = new GroupLayout(getContentPane());
+    getContentPane().setLayout(layout);
+    layout.setHorizontalGroup(
+        layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup()
+                .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createParallelGroup()
+                .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addComponent(intensityLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addComponent(varianceLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+    );
+    layout.setVerticalGroup(
+        layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                    .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup()
+                        .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(intensityLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(varianceLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                ))
+
+    );
+  }
+
+  private void createMainWindow() {
+    imageLabel = new JLabel();
+    jScrollPane = new JScrollPane(imageLabel);
+
+    histogram = new ChartPanel(null);
+    histogram.setPreferredSize(new java.awt.Dimension(700, 500));
+
+    comboBox = new JComboBox<>(Channel.values());
+    comboBox.addItemListener(ae -> {
+      selectedChannel = (Channel) ae.getItem();
+      repaint();
+    });
+
+    intensityLabel = new JLabel();
+    varianceLabel = new JLabel();
+
+    intensityLabel.setVisible(false);
+    varianceLabel.setVisible(false);
+    comboBox.setVisible(false);
+  }
+
+  private void createMenu() {
     JMenuBar menuBar = new JMenuBar();
     setJMenuBar(menuBar);
     //submenu file
@@ -200,55 +259,23 @@ public class Poc extends JFrame implements ImageUpdater {
     });
     menu.add(mitem);
 
-    imageLabel = new JLabel();
-    JScrollPane jScrollPane = new JScrollPane(imageLabel);
-
-    histogram = new ChartPanel(null);
-    histogram.setPreferredSize(new java.awt.Dimension(700, 500));
-
-
-    comboBox = new JComboBox<>(Channel.values());
-    comboBox.addItemListener(ae -> {
-      selectedChannel = (Channel) ae.getItem();
-      repaint();
+    //item log
+    mitem = new JMenuItem("HSL");
+    mitem.addActionListener(ae -> {
+      hslForm = new HslForm(Poc.this);
+      hslForm.pack();
+      hslForm.setVisible(true);
     });
+    menu.add(mitem);
 
-    intensityLabel = new JLabel();
-    varianceLabel = new JLabel();
-
-    intensityLabel.setVisible(false);
-    varianceLabel.setVisible(false);
-    comboBox.setVisible(false);
-
-    GroupLayout layout = new GroupLayout(getContentPane());
-    getContentPane().setLayout(layout);
-    layout.setHorizontalGroup(
-        layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup()
-                .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createParallelGroup()
-                .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addComponent(intensityLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addComponent(varianceLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-    );
-    layout.setVerticalGroup(
-        layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                    .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup()
-                        .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(intensityLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(varianceLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                ))
-
-    );
+    //item log
+    mitem = new JMenuItem("CMYK");
+    mitem.addActionListener(ae -> {
+      cmykForm = new CmykForm(Poc.this);
+      cmykForm.pack();
+      cmykForm.setVisible(true);
+    });
+    menu.add(mitem);
   }
 
   private void repaintHistogram() {

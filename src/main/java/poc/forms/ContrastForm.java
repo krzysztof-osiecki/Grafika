@@ -13,7 +13,8 @@ import java.awt.event.MouseEvent;
 
 public class ContrastForm extends BaseForm {
 
-  private JSpinner vSpiner;
+  private JLabel regularLabelValue;
+  private JLabel alternativeLabelValue;
 
   public ContrastForm(ImageUpdater updater) {
     super(updater);
@@ -24,14 +25,15 @@ public class ContrastForm extends BaseForm {
 
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     setTitle("Contrast...");
-    setMinimumSize(new java.awt.Dimension(400, 200));
-    setPreferredSize(new java.awt.Dimension(400, 200));
+    setMinimumSize(new java.awt.Dimension(400, 150));
+    setPreferredSize(new java.awt.Dimension(400, 150));
 
-    vSpiner = new JSpinner();
+    regularLabelValue = new JLabel();
+    alternativeLabelValue = new JLabel();
     JSlider regularSlider = createRegularSlider();
-    JLabel regularLabel = new JLabel("1version");
+    JLabel regularLabel = new JLabel(" 1version");
     JSlider alternativeSlider = createAlternativeSlider();
-    JLabel alternativeLabel = new JLabel("2version");
+    JLabel alternativeLabel = new JLabel(" 2version");
     JButton cancelButton = createCancelButton();
     JButton okButton = createOkButton();
     JButton negativeButton = new JButton();
@@ -50,23 +52,17 @@ public class ContrastForm extends BaseForm {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(okButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(regularSlider, GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
+                        .addComponent(regularSlider, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(regularLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(vSpiner, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(this.regularLabelValue, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(alternativeSlider, GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
+                        .addComponent(alternativeSlider, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(alternativeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(vSpiner, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(this.alternativeLabelValue, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(negativeButton, GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addComponent(vSpiner, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(okButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(negativeButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -74,23 +70,18 @@ public class ContrastForm extends BaseForm {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(vSpiner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(regularLabelValue, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(regularSlider, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(regularLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(vSpiner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(alternativeLabelValue, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(alternativeSlider, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(alternativeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(okButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addGap(18, 18, 18))
-                .addContainerGap(31, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addGap(18, 18, 18)
-                    .addComponent(negativeButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(31, Short.MAX_VALUE))
+                    .addComponent(negativeButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
     );
 
     pack();
@@ -112,7 +103,7 @@ public class ContrastForm extends BaseForm {
 
   private void alternativeSliderStateChanged(ChangeEvent evt) {
     JSlider slider = (JSlider) evt.getSource();
-    vSpiner.setValue(slider.getValue());
+    alternativeLabelValue.setText(" "+String.valueOf(slider.getValue()));
     try {
       // Dla kazdego nowego polozenia suwaka obraz roboczy jest przeliczany od nowa
       ImageProcessor.processImage(updater.getOriginalImage(), updater.getWorkImage(), new AlternativeContrastFunction(slider.getValue()));
@@ -138,7 +129,7 @@ public class ContrastForm extends BaseForm {
 
   private void regularSliderStateChanged(ChangeEvent evt) {
     JSlider slider = (JSlider) evt.getSource();
-    vSpiner.setValue(slider.getValue());
+    regularLabelValue.setText(" "+String.valueOf(slider.getValue()));
     try {
       // Dla kazdego nowego polozenia suwaka obraz roboczy jest przeliczany od nowa
       ImageProcessor.processImage(updater.getOriginalImage(), updater.getWorkImage(), new ContrastFunction(slider.getValue()));

@@ -1,14 +1,9 @@
 package poc.data;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import poc.tools.ImageHelper;
 
-@Getter
-@Setter
-@AllArgsConstructor
 public class HSL {
+
   private double l;
   private double s;
   private double h;
@@ -31,13 +26,43 @@ public class HSL {
     double tR = tempH + 1 / 3.0;
     double tG = tempH;
     double tB = tempH - 1 / 3.0;
-    tR = normalize(tR);
-    tG = normalize(tG);
-    tB = normalize(tB);
+    tR = fitIntoRange(tR);
+    tG = fitIntoRange(tG);
+    tB = fitIntoRange(tB);
     int red = getColor(tR, q, p);
     int green = getColor(tG, q, p);
     int blue = getColor(tB, q, p);
     return ImageHelper.jrgb(red, green, blue);
+  }
+
+  public HSL(double l, double s, double h) {
+    this.l = l;
+    this.s = s;
+    this.h = h;
+  }
+
+  public double getL() {
+    return l;
+  }
+
+  public void setL(double l) {
+    this.l = normalize(l);
+  }
+
+  public double getS() {
+    return s;
+  }
+
+  public void setS(double s) {
+    this.s = normalize(s);
+  }
+
+  public double getH() {
+    return h;
+  }
+
+  public void setH(double h) {
+    this.h = ImageHelper.handleAngle(h);
   }
 
   private double calculateQ() {
@@ -65,7 +90,7 @@ public class HSL {
     return ImageHelper.clamp(ImageHelper.integerize(p * 255), 0, 255);
   }
 
-  private double normalize(double value) {
+  private double fitIntoRange(double value) {
     if (value < 0) return value + 1;
     else if (value > 1) return value - 1;
     return value;
@@ -91,5 +116,11 @@ public class HSL {
     if (l > 0.5)
       return (max - min) / (2 * l);
     return (max - min) / (2 - 2 * l);
+  }
+
+  private double normalize(double val){
+    if(val < 0) return 0;
+    if(val > 1) return 1;
+    return val;
   }
 }
