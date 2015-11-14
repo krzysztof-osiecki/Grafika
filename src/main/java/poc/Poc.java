@@ -3,7 +3,9 @@ package poc;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import poc.forms.*;
+import poc.functions.AlignFunction;
 import poc.functions.IdentityFunction;
+import poc.histogram.HistogramData;
 import poc.histogram.HistogramProcessor;
 import poc.tools.Channel;
 import poc.tools.ImageProcessor;
@@ -11,6 +13,8 @@ import poc.tools.ImageUpdater;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -19,6 +23,7 @@ import java.io.File;
  */
 public class Poc extends JFrame implements ImageUpdater {
   // Obrazy
+  public BufferedImage backupImage;
   public BufferedImage originalImage;
   public BufferedImage workImage;
 
@@ -42,13 +47,15 @@ public class Poc extends JFrame implements ImageUpdater {
   private JLabel intensityLabel;
   private JComboBox<Channel> comboBox;
   private JScrollPane jScrollPane;
+  private JButton alignButton;
+  private JButton revertButton;
 
   public static void main(String[] args) {
     new Poc();
   }
 
   public Poc() {
-    histogramProcessor = new HistogramProcessor(this);
+    histogramProcessor = new HistogramProcessor();
     setTitle("Poc - Krzysztof Osiecki");
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     initComponents();
@@ -68,15 +75,7 @@ public class Poc extends JFrame implements ImageUpdater {
    */
   @Override
   public void revertImage() {
-    try {
-      originalImage.copyData(workImage.getRaster());
-      imageIcon.setImage(workImage);
-      imageLabel.setIcon(imageIcon);
-      imageLabel.repaint();
-      repaintHistogram();
-    } catch (Exception e) {
-      System.out.println("Error in revertImage: " + e.getMessage());
-    }
+    setCurrentImage(originalImage, workImage);
   }
 
   /**
@@ -84,14 +83,7 @@ public class Poc extends JFrame implements ImageUpdater {
    */
   @Override
   public void updateImage() {
-    try {
-      workImage.copyData(originalImage.getRaster());
-      imageIcon.setImage(workImage);
-      imageLabel.setIcon(imageIcon);
-      repaintHistogram();
-    } catch (Exception e) {
-      System.out.println("Error in updateImage: " + e.getMessage());
-    }
+    setCurrentImage(workImage, originalImage);
   }
 
   @Override
@@ -117,8 +109,10 @@ public class Poc extends JFrame implements ImageUpdater {
       originalImage.getGraphics().drawImage(loadImage, 0, 0, null);
 
       // Roboczy obraz tworzony jako kopia oryginalnego
+      backupImage = new BufferedImage(loadImage.getWidth(), loadImage.getHeight(), BufferedImage.TYPE_INT_RGB);
       workImage = new BufferedImage(loadImage.getWidth(), loadImage.getHeight(), BufferedImage.TYPE_INT_RGB);
       originalImage.copyData(workImage.getRaster());
+      originalImage.copyData(backupImage.getRaster());
 
       // Wyswietlenie roboczego obrazu na formatce
       imageIcon = new ImageIcon(workImage);
@@ -142,16 +136,23 @@ public class Poc extends JFrame implements ImageUpdater {
         layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup()
                 .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createParallelGroup()
-                .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addComponent(intensityLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addComponent(varianceLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup()
+                        .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(intensityLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(varianceLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(alignButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup()
+                        .addComponent(alignButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(revertButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        )
+                )
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
                     .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
@@ -161,7 +162,9 @@ public class Poc extends JFrame implements ImageUpdater {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         .addComponent(intensityLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(varianceLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(varianceLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(alignButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(revertButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 ))
 
     );
@@ -175,17 +178,47 @@ public class Poc extends JFrame implements ImageUpdater {
     histogram.setPreferredSize(new java.awt.Dimension(700, 500));
 
     comboBox = new JComboBox<>(Channel.values());
-    comboBox.addItemListener(ae -> {
-      selectedChannel = (Channel) ae.getItem();
-      repaint();
-    });
+    comboBox.addItemListener(comboItemListener());
+    comboBox.setVisible(false);
+
+    alignButton = new JButton("Equalize");
+    alignButton.addActionListener(alignButtonListener());
+    alignButton.setVisible(false);
+
+    revertButton = new JButton("Revert");
+    revertButton.addActionListener(revertButtonListener());
+    revertButton.setVisible(false);
+
+    varianceLabel = new JLabel();
+    varianceLabel.setVisible(false);
 
     intensityLabel = new JLabel();
-    varianceLabel = new JLabel();
-
     intensityLabel.setVisible(false);
-    varianceLabel.setVisible(false);
-    comboBox.setVisible(false);
+
+
+  }
+
+  private ActionListener alignButtonListener() {
+    return e -> {
+      ImageProcessor.processImage(originalImage, workImage, new AlignFunction(selectedChannel));
+      this.updateImage();
+    };
+  }
+
+  private ActionListener revertButtonListener() {
+    return e -> {
+      backupImage.copyData(originalImage.getRaster());
+      backupImage.copyData(workImage.getRaster());
+      ImageProcessor.processImage(originalImage, workImage, new IdentityFunction());
+      this.repaint();
+    };
+  }
+
+  private ItemListener comboItemListener() {
+    return ae -> {
+      selectedChannel = (Channel) ae.getItem();
+      repaint();
+    };
   }
 
   private void createMenu() {
@@ -206,9 +239,11 @@ public class Poc extends JFrame implements ImageUpdater {
         intensityLabel.setVisible(true);
         varianceLabel.setVisible(true);
         comboBox.setVisible(true);
-
+        alignButton.setVisible(true);
+        revertButton.setVisible(true);
       }
       //wyliczenie histogramu
+      HistogramData.PIXEL_COUNT = originalImage.getHeight() * originalImage.getWidth();
       ImageProcessor.processImage(originalImage, workImage, new IdentityFunction());
       repaint();
     });
@@ -284,5 +319,17 @@ public class Poc extends JFrame implements ImageUpdater {
     varianceLabel.setText("Variance: " + histogramProcessor.getVariance());
     histogram.setChart(chart);
     histogram.repaint();
+  }
+
+  private void setCurrentImage(BufferedImage source, BufferedImage destination) {
+    try {
+      source.copyData(destination.getRaster());
+      imageIcon.setImage(workImage);
+      imageLabel.setIcon(imageIcon);
+      imageLabel.repaint();
+      repaintHistogram();
+    } catch (Exception e) {
+      System.out.println("Error in revertImage: " + e.getMessage());
+    }
   }
 }

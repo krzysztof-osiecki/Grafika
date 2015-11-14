@@ -5,6 +5,7 @@ public class HistogramData {
   public static final int[] GREEN = new int[256];
   public static final int[] BLUE = new int[256];
   public static final int[] GRAY_SCALE = new int[256];
+  public static long PIXEL_COUNT = 0;
 
   static {
     clear();

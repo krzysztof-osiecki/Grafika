@@ -10,18 +10,12 @@ import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import poc.tools.Channel;
-import poc.tools.ImageUpdater;
 import poc.tools.UIHelper;
 
 public class HistogramProcessor {
-  private ImageUpdater updater;
-
-  public HistogramProcessor(ImageUpdater updater) {
-    this.updater = updater;
-  }
 
   public double getAverangeIntensity() {
-    double pixelCount = getPixelCount();
+    double pixelCount = HistogramData.PIXEL_COUNT;
     double averangeIntensity = 0;
     for (int i = 0; i < 256; i++) {
       averangeIntensity += i * (HistogramData.GRAY_SCALE[i] / pixelCount);
@@ -30,7 +24,7 @@ public class HistogramProcessor {
   }
 
   public double getVariance() {
-    double pixelCount = getPixelCount();
+    double pixelCount = HistogramData.PIXEL_COUNT;
     double variance = 0;
     double averangeIntensity = getAverangeIntensity();
     for (int i = 0; i < 256; i++) {
@@ -60,15 +54,15 @@ public class HistogramProcessor {
 
   private IntervalXYDataset createDataset(Channel selectedChannel) {
     XYSeriesCollection dataset = new XYSeriesCollection();
-    double pixelCount = getPixelCount();
+    double pixelCount = HistogramData.PIXEL_COUNT;
     final XYSeries red = new XYSeries("red");
     final XYSeries green = new XYSeries("green");
     final XYSeries blue = new XYSeries("blue");
     final XYSeries gray = new XYSeries("gray");
     for (int i = 1; i < 255; i++) {
       red.add(i, HistogramData.RED[i] / pixelCount);
-      green.add(i, HistogramData.BLUE[i] / pixelCount);
-      blue.add(i, HistogramData.GREEN[i] / pixelCount);
+      green.add(i, HistogramData.GREEN[i] / pixelCount);
+      blue.add(i, HistogramData.BLUE[i] / pixelCount);
       gray.add(i, HistogramData.GRAY_SCALE[i] / pixelCount);
     }
 
@@ -94,9 +88,5 @@ public class HistogramProcessor {
     }
 
     return dataset;
-  }
-
-  private int getPixelCount() {
-    return updater.getOriginalImage() == null ? 1 : updater.getOriginalImage().getHeight() * updater.getOriginalImage().getWidth();
   }
 }
