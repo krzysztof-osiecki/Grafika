@@ -104,9 +104,9 @@ public class HSL {
     return (max - min) / (2 - 2 * l);
   }
 
-  private double normalize(double val) {
-    if (val < 0) return 0;
-    if (val > 1) return 1;
+  private double normalize(double val){
+    if(val < 0) return 0;
+    if(val > 1) return 1;
     return val;
   }
 }

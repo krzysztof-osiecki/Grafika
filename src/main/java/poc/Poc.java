@@ -237,10 +237,17 @@ public class Poc extends JFrame implements ImageUpdater {
     uiHelper.menuItem(menu, "Brightness", uiHelper.brightnessForm(this));
     uiHelper.menuItem(menu, "Contrast", uiHelper.contrastForm(this));
     uiHelper.menuItem(menu, "Gamma", uiHelper.gammaForm(this));
+
+    menu = new JMenu("Models");
+    menuBar.add(menu);
     uiHelper.menuItem(menu, "HSL", uiHelper.hslForm(this));
     uiHelper.menuItem(menu, "CMYK", uiHelper.cmykForm(this));
     uiHelper.menuItem(menu, "LAB", uiHelper.labForm(this));
     uiHelper.menuItem(menu, "LUV", uiHelper.luvForm(this));
+
+    menu = new JMenu("Filter");
+    menuBar.add(menu);
+    uiHelper.menuItem(menu, "Filter", uiHelper.filterForm(this));
   }
 
   private ChangeListener scaleSpinnersListener() {

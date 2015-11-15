@@ -74,4 +74,12 @@ public class UIHelper {
       luvForm.setVisible(true);
     };
   }
+
+  public ActionListener filterForm(Poc poc) {
+    return ae -> {
+      FilterForm filterForm = new FilterForm(poc);
+      filterForm.pack();
+      filterForm.setVisible(true);
+    };
+  }
 }

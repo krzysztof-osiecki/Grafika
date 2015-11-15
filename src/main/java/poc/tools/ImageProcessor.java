@@ -1,5 +1,6 @@
 package poc.tools;
 
+import poc.functions.PlaneFunction;
 import poc.histogram.HistogramData;
 
 import java.awt.image.BufferedImage;
@@ -13,9 +14,8 @@ public class ImageProcessor {
     // Dzieki temu uzyskuje sie bezposredni dostep do ich wartosci
     int[] sp = getBitMap(src);
     int[] dp = getBitMap(dst);
-
-    // Iteracja po wszystkich pikselach obrazu i przeliczenie kazdego z nich za pomoca funkcji changeBrightness()
     HistogramData.clear();
+    // Iteracja po wszystkich pikselach obrazu i przeliczenie kazdego z nich za pomoca funkcji changeBrightness()
     int i = 0;
     for (int y = 0; y < src.getHeight(); ++y) {
       for (int x = 0; x < src.getWidth(); ++x) {
@@ -23,6 +23,39 @@ public class ImageProcessor {
         i++;
       }
     }
+  }
+
+  public static void processImage(BufferedImage src, BufferedImage dst, PlaneFunction transformation) {
+    // Pobranie referencji na bufor z pikselami obrazu zrodlowego i docelowego
+    // Dzieki temu uzyskuje sie bezposredni dostep do ich wartosci
+    int[] sp = getBitMap(src);
+    int[] dp = getBitMap(dst);
+    HistogramData.clear();
+    // Iteracja po wszystkich pikselach obrazu i przeliczenie kazdego z nich za pomoca funkcji changeBrightness()
+    int i = 0;
+    for (int y = 0; y < src.getHeight(); ++y) {
+      for (int x = 0; x < src.getWidth(); ++x) {
+        int halfSize = -(transformation.tableSize() - 1) / 2;
+        Integer[][] ints = new Integer[transformation.tableSize()][transformation.tableSize()];
+
+        for (int a = 0; a < transformation.tableSize(); a++) {
+          for (int b = 0; b < transformation.tableSize(); b++) {
+            int currX = x + halfSize + a;
+            if (currX < 0) currX = 0;
+            if (currX >= src.getWidth()) currX = src.getWidth() - 1;
+            int currY = y + halfSize + b;
+            if (currY < 0) currY = 0;
+            if (currY >= src.getHeight()) currY = src.getHeight() - 1;
+            int newI = src.getWidth() * currY + currX;
+            ints[a][b] = sp[newI];
+          }
+        }
+
+        dp[i] = transformation.apply(ints);
+        i++;
+      }
+    }
+
   }
 
   private static int[] getBitMap(BufferedImage src) {
