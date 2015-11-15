@@ -10,7 +10,7 @@ public class IdentityFunction extends BaseFunction {
   }
 
   public IdentityFunction() {
-    integers = staticIntegers;
+    values = staticIntegers;
   }
 
 }

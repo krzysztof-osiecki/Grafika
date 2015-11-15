@@ -5,6 +5,16 @@ package poc.tools;
  */
 public class ImageHelper {
 
+  public static double Xr = 0.9505;
+  public static double Yr = 1.0000;
+  public static double Zr = 1.0891;
+  public static double E = 0.008856;
+  public static double K = 903.3;
+  public static double KE = K*E;
+  public static double UPrimN = 0.2009;
+  public static double VPrimN = 0.4610;
+  public static double YByK = Yr/K;
+
   public static int jrgb(int r, int g, int b) {
     return (r << 16) + (g << 8) + b;
   }

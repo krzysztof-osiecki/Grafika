@@ -1,7 +1,11 @@
 package poc.data;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import poc.tools.ImageHelper;
 
+@Getter
+@AllArgsConstructor
 public class HSL {
 
   private double l;
@@ -35,30 +39,12 @@ public class HSL {
     return ImageHelper.jrgb(red, green, blue);
   }
 
-  public HSL(double l, double s, double h) {
-    this.l = l;
-    this.s = s;
-    this.h = h;
-  }
-
-  public double getL() {
-    return l;
-  }
-
   public void setL(double l) {
     this.l = normalize(l);
   }
 
-  public double getS() {
-    return s;
-  }
-
   public void setS(double s) {
     this.s = normalize(s);
-  }
-
-  public double getH() {
-    return h;
   }
 
   public void setH(double h) {
@@ -118,9 +104,9 @@ public class HSL {
     return (max - min) / (2 - 2 * l);
   }
 
-  private double normalize(double val){
-    if(val < 0) return 0;
-    if(val > 1) return 1;
+  private double normalize(double val) {
+    if (val < 0) return 0;
+    if (val > 1) return 1;
     return val;
   }
 }

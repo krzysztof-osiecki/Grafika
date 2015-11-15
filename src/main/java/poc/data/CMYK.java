@@ -1,7 +1,11 @@
 package poc.data;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import poc.tools.ImageHelper;
 
+@Getter
+@AllArgsConstructor
 public class CMYK {
   private double cyan;
   private double magenta;
@@ -31,39 +35,16 @@ public class CMYK {
     return ImageHelper.jrgb(r, g, b);
   }
 
-  public CMYK(double cyan, double magenta, double yellow, double black) {
-    this.cyan = cyan;
-    this.magenta = magenta;
-    this.yellow = yellow;
-    this.black = black;
-  }
-
-  public double getCyan() {
-    return cyan;
-  }
-
   public void setCyan(double cyan) {
     this.cyan = normalize(cyan);
-  }
-
-  public double getMagenta() {
-    return magenta;
   }
 
   public void setMagenta(double magenta) {
     this.magenta = normalize(magenta);
   }
 
-  public double getYellow() {
-    return yellow;
-  }
-
   public void setYellow(double yellow) {
     this.yellow = normalize(yellow);
-  }
-
-  public double getBlack() {
-    return black;
   }
 
   public void setBlack(double black) {

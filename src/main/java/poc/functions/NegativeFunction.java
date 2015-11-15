@@ -10,7 +10,7 @@ public class NegativeFunction extends BaseFunction {
   }
 
   public NegativeFunction() {
-    integers = staticIntegers;
+    values = staticIntegers;
   }
 
 }

@@ -10,7 +10,8 @@ import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import poc.tools.Channel;
-import poc.tools.UIHelper;
+
+import java.awt.*;
 
 public class HistogramProcessor {
 
@@ -48,7 +49,7 @@ public class HistogramProcessor {
     rangeAxis.setVisible(false);
     rangeAxis.setLowerBound(0);
     XYBarRenderer r = (XYBarRenderer) chart.getXYPlot().getRenderer();
-    UIHelper.colorSeries(selectedChannel, r);
+    colorSeries(selectedChannel, r);
     return chart;
   }
 
@@ -88,5 +89,29 @@ public class HistogramProcessor {
     }
 
     return dataset;
+  }
+
+  private void colorSeries(Channel selectedChannel, XYBarRenderer r) {
+    int alpha = 128;
+    switch (selectedChannel) {
+      case RED:
+        r.setSeriesPaint(0, new Color(255, 0, 0, alpha));
+        break;
+      case GREEN:
+        r.setSeriesPaint(0, new Color(0, 255, 0, alpha));
+        break;
+      case BLUE:
+        r.setSeriesPaint(0, new Color(0, 0, 255, alpha));
+        break;
+      case GRAY:
+        r.setSeriesPaint(0, new Color(255, 255, 255, alpha));
+        break;
+      case ALL:
+        r.setSeriesPaint(0, new Color(255, 0, 0, alpha));
+        r.setSeriesPaint(1, new Color(0, 255, 0, alpha));
+        r.setSeriesPaint(2, new Color(0, 0, 255, alpha));
+        r.setSeriesPaint(3, new Color(255, 255, 255, alpha));
+        break;
+    }
   }
 }

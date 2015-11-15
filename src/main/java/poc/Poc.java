@@ -2,17 +2,19 @@ package poc;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import poc.forms.*;
 import poc.functions.AlignFunction;
 import poc.functions.IdentityFunction;
+import poc.functions.ScaleFunction;
 import poc.histogram.HistogramData;
 import poc.histogram.HistogramProcessor;
 import poc.tools.Channel;
 import poc.tools.ImageProcessor;
 import poc.tools.ImageUpdater;
+import poc.tools.UIHelper;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
@@ -22,45 +24,42 @@ import java.io.File;
  * Glowna klasa integrujaca wszystki formatki kontrolne i wyswietlajaca obraz
  */
 public class Poc extends JFrame implements ImageUpdater {
+  private final UIHelper uiHelper;
+  private final HistogramProcessor histogramProcessor;
+  private Channel selectedChannel = Channel.ALL;
+
   // Obrazy
   public BufferedImage backupImage;
   public BufferedImage originalImage;
   public BufferedImage workImage;
 
-  // Formatki zmiany ustawien
-  private BrightnessForm brightnessForm;
-  private ContrastForm contrastForm;
-  private GammaForm gammaForm;
-  private HslForm hslForm;
-  private CmykForm cmykForm;
-
-  // Klasa obslugujaca histogram
-  private HistogramProcessor histogramProcessor;
-  private Channel selectedChannel = Channel.ALL;
-
   // Komponenty do wyświetlania obrazu na formatce glownej
   private JLabel imageLabel;
   private ImageIcon imageIcon;
-  private LogForm logForm;
   private ChartPanel histogram;
   private JLabel varianceLabel;
   private JLabel intensityLabel;
   private JComboBox<Channel> comboBox;
   private JScrollPane jScrollPane;
-  private JButton alignButton;
+  private JButton equalizeButton;
   private JButton revertButton;
+  private JSpinner aSpinner;
+  private JSpinner bSpinner;
+  private JSpinner cSpinner;
+  private JSpinner dSpinner;
 
   public static void main(String[] args) {
     new Poc();
   }
 
   public Poc() {
+    uiHelper = new UIHelper(this);
     histogramProcessor = new HistogramProcessor();
     setTitle("Poc - Krzysztof Osiecki");
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     initComponents();
     setVisible(true);
-    setSize(1400, 700);
+    setSize(1400, 800);
   }
 
   @Override
@@ -70,17 +69,11 @@ public class Poc extends JFrame implements ImageUpdater {
     super.repaint();
   }
 
-  /**
-   * Metoda przywracająca oryginalny obraz do obrazu roboczego
-   */
   @Override
   public void revertImage() {
     setCurrentImage(originalImage, workImage);
   }
 
-  /**
-   * Metoda aktualizujaca oryginalny obraz danymi z obrazu roboczego
-   */
   @Override
   public void updateImage() {
     setCurrentImage(workImage, originalImage);
@@ -96,9 +89,6 @@ public class Poc extends JFrame implements ImageUpdater {
     return workImage;
   }
 
-  /**
-   * Metoda wczytujaca obraz z pliku i tworzaca na jego podstawie obraz oryginalny i jego kopie robocza
-   */
   private void readImage(String fn) {
     try {
       // Wczytanie obrazu z pliku
@@ -137,18 +127,27 @@ public class Poc extends JFrame implements ImageUpdater {
             .addGroup(layout.createParallelGroup()
                 .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
-                    .addGroup(layout.createParallelGroup()
-                        .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(intensityLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(varianceLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(alignButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup()
-                        .addComponent(alignButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(revertButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        )
+                .addGroup(layout.createParallelGroup()
+                    .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(intensityLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(varianceLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(equalizeButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(aSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap()
+                        .addComponent(bSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(cSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap()
+                        .addComponent(dSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 )
+                .addGroup(layout.createParallelGroup()
+                    .addComponent(equalizeButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(revertButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+            )
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -163,8 +162,17 @@ public class Poc extends JFrame implements ImageUpdater {
                         .addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         .addComponent(intensityLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         .addComponent(varianceLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(alignButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(revertButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup()
+                            .addComponent(equalizeButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(revertButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup()
+                            .addComponent(aSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addGap(10)
+                            .addComponent(bSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup()
+                            .addComponent(cSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addGap(10)
+                            .addComponent(dSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
                 ))
 
     );
@@ -181,9 +189,9 @@ public class Poc extends JFrame implements ImageUpdater {
     comboBox.addItemListener(comboItemListener());
     comboBox.setVisible(false);
 
-    alignButton = new JButton("Equalize");
-    alignButton.addActionListener(alignButtonListener());
-    alignButton.setVisible(false);
+    equalizeButton = new JButton("Equalize");
+    equalizeButton.addActionListener(alignButtonListener());
+    equalizeButton.setVisible(false);
 
     revertButton = new JButton("Revert");
     revertButton.addActionListener(revertButtonListener());
@@ -195,7 +203,52 @@ public class Poc extends JFrame implements ImageUpdater {
     intensityLabel = new JLabel();
     intensityLabel.setVisible(false);
 
+    aSpinner = new JSpinner();
+    aSpinner.setVisible(false);
 
+    bSpinner = new JSpinner();
+    bSpinner.setVisible(false);
+    bSpinner.setValue(255);
+
+    cSpinner = new JSpinner();
+    cSpinner.setVisible(false);
+
+    dSpinner = new JSpinner();
+    dSpinner.setVisible(false);
+    dSpinner.setValue(255);
+  }
+
+  private void createMenu() {
+    JMenuBar menuBar = new JMenuBar();
+    setJMenuBar(menuBar);
+    //submenu file
+    JMenu menu = new JMenu("File");
+    menuBar.add(menu);
+    //item otwierania pliku
+    uiHelper.menuItem(menu, "Open", openFileListener());
+    menu.addSeparator();
+    //item wyjscia z aplikacji
+    uiHelper.menuItem(menu, "Exit", ae -> System.exit(0));
+
+    //submenu przeksztalcen koloru
+    menu = new JMenu("Colors");
+    menuBar.add(menu);
+
+    uiHelper.menuItem(menu, "Brightness", uiHelper.brightnessForm(this));
+    uiHelper.menuItem(menu, "Contrast", uiHelper.contrastForm(this));
+    uiHelper.menuItem(menu, "Gamma", uiHelper.gammaForm(this));
+    uiHelper.menuItem(menu, "HSL", uiHelper.hslForm(this));
+    uiHelper.menuItem(menu, "CMYK", uiHelper.cmykForm(this));
+    uiHelper.menuItem(menu, "LAB", uiHelper.labForm(this));
+    uiHelper.menuItem(menu, "LUV", uiHelper.luvForm(this));
+  }
+
+  private ChangeListener scaleSpinnersListener() {
+    return e -> {
+      this.revertImage();
+      ImageProcessor.processImage(originalImage, workImage, new ScaleFunction((int) aSpinner.getValue(), (int)
+          bSpinner.getValue(), (int) cSpinner.getValue(), (int) dSpinner.getValue(), selectedChannel));
+    };
   }
 
   private ActionListener alignButtonListener() {
@@ -207,6 +260,10 @@ public class Poc extends JFrame implements ImageUpdater {
 
   private ActionListener revertButtonListener() {
     return e -> {
+      aSpinner.setValue(0);
+      bSpinner.setValue(255);
+      cSpinner.setValue(0);
+      dSpinner.setValue(255);
       backupImage.copyData(originalImage.getRaster());
       backupImage.copyData(workImage.getRaster());
       ImageProcessor.processImage(originalImage, workImage, new IdentityFunction());
@@ -216,20 +273,18 @@ public class Poc extends JFrame implements ImageUpdater {
 
   private ItemListener comboItemListener() {
     return ae -> {
+      this.updateImage();
+      aSpinner.setValue(0);
+      bSpinner.setValue(255);
+      cSpinner.setValue(0);
+      dSpinner.setValue(255);
       selectedChannel = (Channel) ae.getItem();
       repaint();
     };
   }
 
-  private void createMenu() {
-    JMenuBar menuBar = new JMenuBar();
-    setJMenuBar(menuBar);
-    //submenu file
-    JMenu menu = new JMenu("File");
-    menuBar.add(menu);
-    //item otwierania pliku
-    JMenuItem mitem = new JMenuItem("Open");
-    mitem.addActionListener(ae -> {
+  private ActionListener openFileListener() {
+    return ae -> {
       JFileChooser fc = new JFileChooser();
       int returnVal = fc.showOpenDialog(null);
       if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -239,78 +294,22 @@ public class Poc extends JFrame implements ImageUpdater {
         intensityLabel.setVisible(true);
         varianceLabel.setVisible(true);
         comboBox.setVisible(true);
-        alignButton.setVisible(true);
+        equalizeButton.setVisible(true);
         revertButton.setVisible(true);
+        aSpinner.setVisible(true);
+        bSpinner.setVisible(true);
+        cSpinner.setVisible(true);
+        dSpinner.setVisible(true);
+        aSpinner.addChangeListener(scaleSpinnersListener());
+        bSpinner.addChangeListener(scaleSpinnersListener());
+        cSpinner.addChangeListener(scaleSpinnersListener());
+        dSpinner.addChangeListener(scaleSpinnersListener());
       }
       //wyliczenie histogramu
       HistogramData.PIXEL_COUNT = originalImage.getHeight() * originalImage.getWidth();
       ImageProcessor.processImage(originalImage, workImage, new IdentityFunction());
       repaint();
-    });
-    menu.add(mitem);
-    menu.addSeparator();
-    //item wyjscia z aplikacji
-    mitem = new JMenuItem("Exit");
-    mitem.addActionListener(event -> System.exit(0));
-    menu.add(mitem);
-
-    //submenu przeksztalcen koloru
-    menu = new JMenu("Colors");
-    menuBar.add(menu);
-
-    //item jasnosci
-    mitem = new JMenuItem("Brightness");
-    mitem.addActionListener(ae -> {
-      brightnessForm = new BrightnessForm(Poc.this);
-      brightnessForm.pack();
-      brightnessForm.setVisible(true);
-    });
-    menu.add(mitem);
-
-    //item kontrastu
-    mitem = new JMenuItem("Contrast");
-    mitem.addActionListener(ae -> {
-      contrastForm = new ContrastForm(Poc.this);
-      contrastForm.pack();
-      contrastForm.setVisible(true);
-    });
-    menu.add(mitem);
-
-    //item gamma
-    mitem = new JMenuItem("Gamma");
-    mitem.addActionListener(ae -> {
-      gammaForm = new GammaForm(Poc.this);
-      gammaForm.pack();
-      gammaForm.setVisible(true);
-    });
-    menu.add(mitem);
-
-    //item log
-    mitem = new JMenuItem("Log");
-    mitem.addActionListener(ae -> {
-      logForm = new LogForm(Poc.this);
-      logForm.pack();
-      logForm.setVisible(true);
-    });
-    menu.add(mitem);
-
-    //item log
-    mitem = new JMenuItem("HSL");
-    mitem.addActionListener(ae -> {
-      hslForm = new HslForm(Poc.this);
-      hslForm.pack();
-      hslForm.setVisible(true);
-    });
-    menu.add(mitem);
-
-    //item log
-    mitem = new JMenuItem("CMYK");
-    mitem.addActionListener(ae -> {
-      cmykForm = new CmykForm(Poc.this);
-      cmykForm.pack();
-      cmykForm.setVisible(true);
-    });
-    menu.add(mitem);
+    };
   }
 
   private void repaintHistogram() {
