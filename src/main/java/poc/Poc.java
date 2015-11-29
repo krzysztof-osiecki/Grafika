@@ -242,7 +242,7 @@ public class Poc extends JFrame implements ImageUpdater {
     menuBar.add(menu);
     uiHelper.menuItem(menu, "HSL", uiHelper.hslForm(this));
     uiHelper.menuItem(menu, "CMYK", uiHelper.cmykForm(this));
-    uiHelper.menuItem(menu, "LAB1", uiHelper.labForm(this));
+    uiHelper.menuItem(menu, "LAB", uiHelper.labForm(this));
     uiHelper.menuItem(menu, "LUV", uiHelper.luvForm(this));
 
     menu = new JMenu("Filter");

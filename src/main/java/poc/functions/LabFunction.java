@@ -1,19 +1,19 @@
 package poc.functions;
 
-import poc.data.LAB1;
+import poc.data.LAB;
 import poc.histogram.HistogramData;
 import poc.tools.ImageHelper;
 
 public class LabFunction extends BaseFunction {
-  private LAB1 base;
+  private LAB base;
 
-  public LabFunction(LAB1 base) {
+  public LabFunction(LAB base) {
     this.base = base;
   }
 
   @Override
   public Integer apply(Integer rgb) {
-    LAB1 lab = new LAB1(rgb);
+    LAB lab = new LAB(rgb);
     lab.setL(lab.getL() + base.getL());
     lab.setA(lab.getA() + base.getA());
     lab.setB(lab.getB() + base.getB());
