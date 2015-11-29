@@ -1,6 +1,6 @@
 package poc.forms;
 
-import poc.data.LAB;
+import poc.data.LAB1;
 import poc.functions.LabFunction;
 import poc.tools.ImageProcessor;
 import poc.tools.ImageUpdater;
@@ -25,7 +25,7 @@ public class LabForm extends BaseForm {
   private void initComponents() {
 
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    setTitle("LAB...");
+    setTitle("LAB1...");
     setMinimumSize(new Dimension(500, 200));
     setPreferredSize(new Dimension(500, 200));
 
@@ -138,7 +138,7 @@ public class LabForm extends BaseForm {
   private void procesLab() {
     try {
       // Dla kazdego nowego polozenia suwaka obraz roboczy jest przeliczany od nowa
-      ImageProcessor.processImage(updater.getOriginalImage(), updater.getWorkImage(), new LabFunction(new LAB(currentL, currentA, currentB)));
+      ImageProcessor.processImage(updater.getOriginalImage(), updater.getWorkImage(), new LabFunction(new LAB1(currentL, currentA, currentB)));
 
       // Po przeliczeniu wartosci obrazu, wymuszenie odrysowania formatki glownej
       updater.repaint();

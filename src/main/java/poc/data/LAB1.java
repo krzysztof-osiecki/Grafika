@@ -8,8 +8,8 @@ import poc.tools.ImageHelper;
 
 @Getter
 @AllArgsConstructor
-public class LAB {
-  private static BiMap<Integer, LAB> processedColors = HashBiMap.create();
+public class LAB1 {
+  private static BiMap<Integer, LAB1> processedColors = HashBiMap.create();
   private double l;
   private int a;
   private int b;
@@ -28,8 +28,8 @@ public class LAB {
     this.b = ImageHelper.clamp(b, -128, 127);
   }
 
-  public LAB(int rgb) {
-    LAB lab = processedColors.get(rgb);
+  public LAB1(int rgb) {
+    LAB1 lab = processedColors.get(rgb);
     if (lab != null) {
       l = lab.getL();
       a = lab.getA();
@@ -92,8 +92,8 @@ public class LAB {
 
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof LAB)) return false;
-    LAB toCompare = (LAB) obj;
+    if (!(obj instanceof LAB1)) return false;
+    LAB1 toCompare = (LAB1) obj;
     return Math.abs(toCompare.l - l) < 0.1 && toCompare.a == a && toCompare.b == b;
   }
 }
