@@ -1,6 +1,8 @@
 package poc.tools;
 
+import poc.functions.OptimizedGaussian;
 import poc.functions.PlaneFunction;
+import poc.functions.UnsharpedMaskFunction;
 import poc.histogram.HistogramData;
 
 import java.awt.image.BufferedImage;
@@ -15,7 +17,6 @@ public class ImageProcessor {
     int[] sp = getBitMap(src);
     int[] dp = getBitMap(dst);
     HistogramData.clear();
-    // Iteracja po wszystkich pikselach obrazu i przeliczenie kazdego z nich za pomoca funkcji changeBrightness()
     int i = 0;
     for (int y = 0; y < src.getHeight(); ++y) {
       for (int x = 0; x < src.getWidth(); ++x) {
@@ -31,11 +32,11 @@ public class ImageProcessor {
     int[] sp = getBitMap(src);
     int[] dp = getBitMap(dst);
     HistogramData.clear();
-    // Iteracja po wszystkich pikselach obrazu i przeliczenie kazdego z nich za pomoca funkcji changeBrightness()
+
     int i = 0;
+    int halfSize = -(transformation.tableSize() - 1) / 2;
     for (int y = 0; y < src.getHeight(); ++y) {
       for (int x = 0; x < src.getWidth(); ++x) {
-        int halfSize = -(transformation.tableSize() - 1) / 2;
         Integer[][] ints = new Integer[transformation.tableSize()][transformation.tableSize()];
 
         for (int a = 0; a < transformation.tableSize(); a++) {
@@ -55,7 +56,64 @@ public class ImageProcessor {
         i++;
       }
     }
+  }
 
+  public static void processImage(BufferedImage src, BufferedImage dst, UnsharpedMaskFunction transformation) {
+    ImageProcessor.processImage(src, dst, transformation.getGaussian());
+    int[] sp = getBitMap(src);
+    int[] dp = getBitMap(dst);
+    int i = 0;
+    for (int y = 0; y < src.getHeight(); ++y) {
+      for (int x = 0; x < src.getWidth(); ++x) {
+        dp[i] = transformation.apply(dp[i], sp[i]);
+        i++;
+      }
+    }
+  }
+
+  public static void processImage(BufferedImage src, BufferedImage dst, OptimizedGaussian transformation) {
+    // Pobranie referencji na bufor z pikselami obrazu zrodlowego i docelowego
+    // Dzieki temu uzyskuje sie bezposredni dostep do ich wartosci
+    int[] sp = getBitMap(src);
+    int[] dp = getBitMap(dst);
+    HistogramData.clear();
+    int i = 0;
+    for (int y = 0; y < src.getHeight(); ++y) {
+      for (int x = 0; x < src.getWidth(); ++x) {
+        int halfSize = -(transformation.tableSize() - 1) / 2;
+        Integer[] ints = new Integer[transformation.tableSize()];
+
+        for (int a = 0; a < transformation.tableSize(); a++) {
+          int currX = x + halfSize + a;
+          if (currX < 0) currX = 0;
+          if (currX >= src.getWidth()) currX = src.getWidth() - 1;
+          int newI = src.getWidth() * y + currX;
+          ints[a] = sp[newI];
+        }
+
+        dp[i] = transformation.apply(ints);
+        i++;
+      }
+    }
+
+    i = 0;
+    for (int y = 0; y < src.getHeight(); ++y) {
+      for (int x = 0; x < src.getWidth(); ++x) {
+        int halfSize = -(transformation.tableSize() - 1) / 2;
+        Integer[] ints = new Integer[transformation.tableSize()];
+
+        for (int a = 0; a < transformation.tableSize(); a++) {
+          int currY = y + halfSize + a;
+          if (currY < 0) currY = 0;
+          if (currY >= src.getHeight()) currY = src.getHeight() - 1;
+          int newI = src.getWidth() * currY + x;
+          ints[a] = dp[newI];
+        }
+
+        dp[i] = transformation.apply(ints);
+        i++;
+      }
+    }
   }
 
   private static int[] getBitMap(BufferedImage src) {

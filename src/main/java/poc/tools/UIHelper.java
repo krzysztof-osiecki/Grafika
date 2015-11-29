@@ -82,4 +82,21 @@ public class UIHelper {
       filterForm.setVisible(true);
     };
   }
+
+
+  public ActionListener unsharpMaskForm(Poc poc) {
+    return ae -> {
+      UnsharpMaskForm unsharpMaskForm = new UnsharpMaskForm(poc);
+      unsharpMaskForm.pack();
+      unsharpMaskForm.setVisible(true);
+    };
+  }
+
+  public ActionListener gaussianForm(Poc poc) {
+    return ae -> {
+      GaussianForm gaussianForm = new GaussianForm(poc);
+      gaussianForm.pack();
+      gaussianForm.setVisible(true);
+    };
+  }
 }

@@ -248,6 +248,8 @@ public class Poc extends JFrame implements ImageUpdater {
     menu = new JMenu("Filter");
     menuBar.add(menu);
     uiHelper.menuItem(menu, "Filter", uiHelper.filterForm(this));
+    uiHelper.menuItem(menu, "Gaussian", uiHelper.gaussianForm(this));
+    uiHelper.menuItem(menu, "Unsharp mask", uiHelper.unsharpMaskForm(this));
   }
 
   private ChangeListener scaleSpinnersListener() {
