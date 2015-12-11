@@ -15,6 +15,9 @@ public class FilterForm extends BaseForm {
   private JSpinner spinner;
   private JButton applyButton;
   private String[][] filter;
+  private JButton minButton;
+  private JButton maxButton;
+  private JButton medianButton;
 
   public FilterForm(ImageUpdater parent) {
     super(parent);
@@ -31,6 +34,12 @@ public class FilterForm extends BaseForm {
     okButton = createOkButton();
     applyButton = new JButton("Apply");
     applyButton.addActionListener(applyFilter());
+    minButton = new JButton("Min");
+    minButton.addActionListener(applyMinFilter());
+    maxButton = new JButton("Max");
+    maxButton.addActionListener(applyMaxFilter());
+    medianButton = new JButton("Median");
+    medianButton.addActionListener(applyMedianFilter());
     spinner = new JSpinner();
     spinner.setValue(1);
     spinner.addChangeListener(e -> {
@@ -43,6 +52,49 @@ public class FilterForm extends BaseForm {
     pack();
   }
 
+  private ActionListener applyMinFilter() {
+    return e1 -> {
+      try {
+        ImageProcessor.processImage(updater.getOriginalImage(), updater.getWorkImage(), new MinFilterFunction(getInts(), (int) spinner.getValue() * 2 + 1));
+
+        // Po przeliczeniu wartosci obrazu, wymuszenie odrysowania formatki glownej
+        updater.repaint();
+        updater.updateImage();
+      } catch (Exception e) {
+        System.out.println("min filter transform error: " + e.getMessage());
+      }
+    };
+
+  }
+
+  private ActionListener applyMaxFilter() {
+    return e1 -> {
+      try {
+        ImageProcessor.processImage(updater.getOriginalImage(), updater.getWorkImage(), new MaxFilterFunction(getInts(), (int) spinner.getValue() * 2 + 1));
+        // Po przeliczeniu wartosci obrazu, wymuszenie odrysowania formatki glownej
+        updater.repaint();
+        updater.updateImage();
+      } catch (Exception e) {
+        System.out.println("max filter transform error: " + e.getMessage());
+      }
+    };
+
+  }
+  private ActionListener applyMedianFilter() {
+    return e1 -> {
+      try {
+        ImageProcessor.processImage(updater.getOriginalImage(), updater.getWorkImage(), new MedianFilterFunction(getInts(), (int) spinner.getValue() * 2 + 1));
+
+        // Po przeliczeniu wartosci obrazu, wymuszenie odrysowania formatki glownej
+        updater.repaint();
+        updater.updateImage();
+      } catch (Exception e) {
+        System.out.println("median filter transform error: " + e.getMessage());
+      }
+    };
+
+  }
+
   private ActionListener applyFilter() {
     return e1 -> {
       try {
@@ -51,7 +103,7 @@ public class FilterForm extends BaseForm {
         // Po przeliczeniu wartosci obrazu, wymuszenie odrysowania formatki glownej
         updater.repaint();
       } catch (Exception e) {
-        System.out.println("hsl transform error: " + e.getMessage());
+        System.out.println("filter transform error: " + e.getMessage());
       }
     };
 
@@ -93,7 +145,13 @@ public class FilterForm extends BaseForm {
                     .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(applyButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(okButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(okButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createSequentialGroup()
+                    .addComponent(minButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(maxButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(medianButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -106,6 +164,10 @@ public class FilterForm extends BaseForm {
                     .addComponent(okButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(applyButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(minButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(maxButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(medianButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(31, Short.MAX_VALUE))
     );
   }
