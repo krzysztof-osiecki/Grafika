@@ -99,4 +99,20 @@ public class UIHelper {
       gaussianForm.setVisible(true);
     };
   }
+
+  public ActionListener fftReImForm(Poc poc) {
+    return ae -> {
+      FftReImForm fftReImForm = new FftReImForm(poc);
+      fftReImForm.pack();
+      fftReImForm.setVisible(true);
+    };
+  }
+  public ActionListener fftMaPhForm(Poc poc) {
+    return ae -> {
+      FftMaPhForm fftMaPhForm = new FftMaPhForm(poc);
+      fftMaPhForm.pack();
+      fftMaPhForm.setVisible(true);
+    };
+  }
 }
+

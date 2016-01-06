@@ -1,5 +1,6 @@
 package poc;
 
+import lombok.Getter;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import poc.functions.AlignFunction;
@@ -29,9 +30,11 @@ public class Poc extends JFrame implements ImageUpdater {
   private Channel selectedChannel = Channel.ALL;
 
   // Obrazy
-  public BufferedImage backupImage;
-  public BufferedImage originalImage;
-  public BufferedImage workImage;
+  private BufferedImage backupImage;
+  @Getter
+  private BufferedImage originalImage;
+  @Getter
+  private BufferedImage workImage;
 
   // Komponenty do wyświetlania obrazu na formatce glownej
   private JLabel imageLabel;
@@ -52,7 +55,7 @@ public class Poc extends JFrame implements ImageUpdater {
     new Poc();
   }
 
-  public Poc() {
+  private Poc() {
     uiHelper = new UIHelper(this);
     histogramProcessor = new HistogramProcessor();
     setTitle("Poc - Krzysztof Osiecki");
@@ -77,16 +80,6 @@ public class Poc extends JFrame implements ImageUpdater {
   @Override
   public void updateImage() {
     setCurrentImage(workImage, originalImage);
-  }
-
-  @Override
-  public BufferedImage getOriginalImage() {
-    return originalImage;
-  }
-
-  @Override
-  public BufferedImage getWorkImage() {
-    return workImage;
   }
 
   private void readImage(String fn) {
@@ -250,6 +243,11 @@ public class Poc extends JFrame implements ImageUpdater {
     uiHelper.menuItem(menu, "Filter", uiHelper.filterForm(this));
     uiHelper.menuItem(menu, "Gaussian", uiHelper.gaussianForm(this));
     uiHelper.menuItem(menu, "Unsharp mask", uiHelper.unsharpMaskForm(this));
+
+    menu = new JMenu("Fft");
+    menuBar.add(menu);
+    uiHelper.menuItem(menu, "Re/Im", uiHelper.fftReImForm(this));
+    uiHelper.menuItem(menu, "Ma/Ph", uiHelper.fftMaPhForm(this));
   }
 
   private ChangeListener scaleSpinnersListener() {
