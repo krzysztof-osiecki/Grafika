@@ -24,7 +24,7 @@ public class GaussianForm extends BaseForm {
 
   private void initComponents() {
 
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
     setTitle("Gaussias...");
     setMinimumSize(new Dimension(500, 200));
     setPreferredSize(new Dimension(500, 200));

@@ -17,7 +17,7 @@ public class LogForm extends BaseForm {
 
   private void initComponents() {
 
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
     setTitle("Log...");
     setMinimumSize(new java.awt.Dimension(400, 200));
     setPreferredSize(new java.awt.Dimension(400, 200));

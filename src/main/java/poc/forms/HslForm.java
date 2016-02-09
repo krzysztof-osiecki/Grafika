@@ -25,7 +25,6 @@ public class HslForm extends BaseForm {
 
   private void initComponents() {
 
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     setTitle("HSL...");
     setMinimumSize(new Dimension(500, 200));
     setPreferredSize(new Dimension(500, 200));

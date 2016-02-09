@@ -29,7 +29,7 @@ public class FftReImForm extends BaseForm {
   }
 
   private void initComponents() {
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
     setTitle("Fft Re/Im");
     setMinimumSize(new java.awt.Dimension(300, 200));
     setPreferredSize(new java.awt.Dimension(380, 200));

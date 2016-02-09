@@ -1,7 +1,6 @@
 package poc.forms;
 
-import javaslang.Tuple;
-import javaslang.Tuple3;
+import poc.data.Tuple3Ints;
 import poc.functions.PlaneFunction;
 import poc.histogram.HistogramData;
 import poc.tools.ImageHelper;
@@ -22,7 +21,7 @@ public class MedianFilterFunction extends PlaneFunction {
 
   @Override
   public Integer apply(Integer[][] integers) {
-    List<Tuple3<Integer, Integer, Integer>> values = new ArrayList<>();
+    List<Tuple3Ints> values = new ArrayList<>();
     for (int i = 0; i < size; i++) {
       for (int j = 0; j < size; j++) {
         if (filter[i][j] > 0) {
@@ -31,12 +30,12 @@ public class MedianFilterFunction extends PlaneFunction {
           int blue = ImageHelper.jblue(integers[i][j]);
           int gray = ImageHelper.clamp(
               ImageHelper.integerize(0.299 * red + 0.587 * green + 0.114 * blue), 0, 255);
-          values.add(Tuple.of(gray, i, j));
+          values.add(Tuple3Ints.of(gray, i, j));
         }
       }
     }
-    List<Tuple3<Integer, Integer, Integer>> sort = values.stream().sorted((o1, o2) -> o1._1 - o2._1).collect(toList());
-    Tuple3<Integer, Integer, Integer> median = sort.get(sort.size() / 2);
+    List<Tuple3Ints> sort = values.stream().sorted((o1, o2) -> o1._1 - o2._1).collect(toList());
+    Tuple3Ints median = sort.get(sort.size() / 2);
 
     int newR = ImageHelper.jred(integers[median._2][median._3]);
     int newG = ImageHelper.jgreen(integers[median._2][median._3]);

@@ -29,7 +29,7 @@ public class FftMaPhForm extends BaseForm {
   }
 
   private void initComponents() {
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
     setTitle("Fft Ma/Ph");
     setMinimumSize(new Dimension(300, 200));
     setPreferredSize(new Dimension(380, 200));

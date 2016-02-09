@@ -22,7 +22,7 @@ public class BrightnessForm extends BaseForm {
     JButton cancelButton = createCancelButton();
     JButton okButton = createOkButton();
 
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
     setTitle("Brightness...");
     setMinimumSize(new java.awt.Dimension(300, 200));
     setPreferredSize(new java.awt.Dimension(380, 200));

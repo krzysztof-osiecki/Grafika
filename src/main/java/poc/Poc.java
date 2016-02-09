@@ -1,6 +1,7 @@
 package poc;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import poc.functions.AlignFunction;
@@ -32,8 +33,10 @@ public class Poc extends JFrame implements ImageUpdater {
   // Obrazy
   private BufferedImage backupImage;
   @Getter
+  @Setter
   private BufferedImage originalImage;
   @Getter
+  @Setter
   private BufferedImage workImage;
 
   // Komponenty do wyświetlania obrazu na formatce glownej
@@ -58,8 +61,9 @@ public class Poc extends JFrame implements ImageUpdater {
   private Poc() {
     uiHelper = new UIHelper(this);
     histogramProcessor = new HistogramProcessor();
-    setTitle("Poc - Krzysztof Osiecki");
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    setTitle("Poc - Krzysztof Osiecki");
+
     initComponents();
     setVisible(true);
     setSize(1400, 800);
@@ -118,7 +122,7 @@ public class Poc extends JFrame implements ImageUpdater {
     layout.setHorizontalGroup(
         layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup()
-                .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane, 600,600, 600))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup()
                     .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -146,7 +150,7 @@ public class Poc extends JFrame implements ImageUpdater {
         layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                    .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane, 600, 600, 600)
                     .addComponent(histogram, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup()

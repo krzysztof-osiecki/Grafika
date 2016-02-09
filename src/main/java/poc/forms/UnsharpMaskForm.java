@@ -26,7 +26,7 @@ public class UnsharpMaskForm extends BaseForm {
 
   private void initComponents() {
 
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
     setTitle("Unsharp...");
     setMinimumSize(new Dimension(500, 200));
     setPreferredSize(new Dimension(500, 200));

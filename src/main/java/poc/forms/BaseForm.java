@@ -12,7 +12,6 @@ public class BaseForm extends JFrame {
 
   public BaseForm(ImageUpdater updater) throws HeadlessException {
     super();
-    setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     this.updater = updater;
   }
 

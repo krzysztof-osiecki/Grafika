@@ -13,4 +13,8 @@ public interface ImageUpdater {
   BufferedImage getOriginalImage();
 
   BufferedImage getWorkImage();
+
+  void setWorkImage(BufferedImage image);
+
+  void setOriginalImage(BufferedImage image);
 }

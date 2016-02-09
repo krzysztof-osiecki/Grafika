@@ -23,7 +23,7 @@ public class ContrastForm extends BaseForm {
 
   private void initComponents() {
 
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
     setTitle("Contrast...");
     setMinimumSize(new java.awt.Dimension(400, 150));
     setPreferredSize(new java.awt.Dimension(400, 150));

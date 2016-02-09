@@ -71,6 +71,18 @@ public class ImageProcessor {
     }
   }
 
+  public static void processImage(BufferedImage src, BufferedImage dst) {
+    int[] sp = getBitMap(src);
+    int[] dp = getBitMap(dst);
+    int i = 0;
+    for (int y = 0; y < src.getHeight(); ++y) {
+      for (int x = 0; x < src.getWidth(); ++x) {
+        dp[i] = sp[i];
+        i++;
+      }
+    }
+  }
+
   public static void processImage(BufferedImage src, BufferedImage dst, OptimizedGaussian transformation) {
     // Pobranie referencji na bufor z pikselami obrazu zrodlowego i docelowego
     // Dzieki temu uzyskuje sie bezposredni dostep do ich wartosci

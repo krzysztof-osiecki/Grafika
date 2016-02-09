@@ -25,8 +25,6 @@ public class CmykForm extends BaseForm {
   }
 
   private void initComponents() {
-
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     setTitle("CMYK...");
     setMinimumSize(new Dimension(400, 200));
     setPreferredSize(new Dimension(400, 200));

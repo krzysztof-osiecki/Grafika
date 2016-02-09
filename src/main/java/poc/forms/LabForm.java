@@ -24,7 +24,7 @@ public class LabForm extends BaseForm {
 
   private void initComponents() {
 
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
     setTitle("LAB...");
     setMinimumSize(new Dimension(500, 200));
     setPreferredSize(new Dimension(500, 200));
